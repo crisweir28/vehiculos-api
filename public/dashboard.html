@@ -1,0 +1,366 @@
+<!--public/dashboard.html-->
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VehiLog — Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <!-- DataTables -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css" />
+  <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css" />
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+  <!-- VehiLog -->
+  <script src="personalizacion/js/config.js"></script>
+  <link rel="stylesheet" href="css/navbar.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="js/permiso.js"></script>
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <div id="navbar"></div>
+
+  <!-- TABS (pills) -->
+  <div class="tabs-bar">
+    <div class="tabs-pills">
+      <button class="tab-pill active" id="tabRegistros" onclick="cambiarTab('registros')">
+        <i class="bi bi-list-ul"></i> Registros
+      </button>
+      <button class="tab-pill" id="tabCitas" onclick="cambiarTab('citas')">
+        <i class="bi bi-calendar-event"></i> Citas
+      </button>
+      <button class="tab-pill" id="tabFlotilla" onclick="cambiarTab('flotilla')">
+        <i class="bi bi-truck"></i> Flotilla
+      </button>
+      <button class="tab-pill" id="tabReportes" onclick="cambiarTab('reportes')">
+        <i class="bi bi-file-earmark-pdf"></i> Reportes
+      </button>
+    </div>
+  </div>
+
+  <!-- ══════ PANEL REGISTROS ══════ -->
+  <div id="panelRegistros">
+    <div class="stats-bar">
+      <div class="stat-card stat-filtro active-filter" id="cardTodos" onclick="setFilterReg('todos', 'cardTodos')">
+        <div class="stat-num" id="statTotal">—</div>
+        <div class="stat-label">Total</div>
+      </div>
+      <div class="stat-card stat-filtro accent" id="cardActivo" onclick="setFilterReg('ACTIVO', 'cardActivo')">
+        <div class="stat-num" id="statActivo">—</div>
+        <div class="stat-label">En sitio</div>
+      </div>
+      <div class="stat-card stat-filtro green" id="cardCerrado" onclick="setFilterReg('CERRADO', 'cardCerrado')">
+        <div class="stat-num" id="statCerrado">—</div>
+        <div class="stat-label">Con salida</div>
+      </div>
+    </div>
+    <div class="filter-bar" style="justify-content:flex-end;">
+      <button class="btn-icon-sm" onclick="cargarRegistros()" title="Actualizar">
+        <i class="bi bi-arrow-clockwise"></i>
+      </button>
+    </div>
+    <div class="dt-wrap">
+      <div class="loading" id="loadingReg"><i class="bi bi-hourglass-split"></i> Cargando registros...</div>
+      <div id="tablaRegistrosWrap" style="display:none;">
+        <table id="tablaRegistros" class="vl-table" width="100%">
+          <thead>
+            <tr>
+              <th>Conductor</th>
+              <th>Folio</th>
+              <th>Placas</th>
+              <th>Vehículo</th>
+              <th>Entrada</th>
+              <th>Salida</th>
+              <th>Estatus</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ PANEL CITAS ══════ -->
+  <div id="panelCitas" style="display:none;">
+    <div class="stats-bar stats-bar-4">
+      <div class="stat-card stat-filtro-cita purple active-filter-cita" id="ccTodos"
+        onclick="setFilterCita('todos', 'ccTodos')">
+        <div class="stat-num" id="statCitasTotal">—</div>
+        <div class="stat-label">Total</div>
+      </div>
+      <div class="stat-card stat-filtro-cita accent" id="ccHoy" onclick="setFilterCita('HOY', 'ccHoy')">
+        <div class="stat-num" id="statCitasHoy">—</div>
+        <div class="stat-label">Hoy</div>
+      </div>
+      <div class="stat-card stat-filtro-cita" id="ccAgendada" onclick="setFilterCita('AGENDADA', 'ccAgendada')">
+        <div class="stat-num" id="statCitasAgendadas">—</div>
+        <div class="stat-label">Agendadas</div>
+      </div>
+      <div class="stat-card stat-filtro-cita" id="ccPendiente" onclick="setFilterCita('PENDIENTE', 'ccPendiente')">
+        <div class="stat-num" id="statCitasPendientes">—</div>
+        <div class="stat-label">Pendientes</div>
+      </div>
+    </div>
+    <div class="filter-bar" style="justify-content:flex-end;">
+      <button class="btn-icon-sm" onclick="cargarCitas()" title="Actualizar">
+        <i class="bi bi-arrow-clockwise"></i>
+      </button>
+    </div>
+    <div class="dt-wrap">
+      <div class="loading" id="loadingCitas"><i class="bi bi-hourglass-split"></i> Cargando citas...</div>
+      <div id="tablaCitasWrap" style="display:none;">
+        <table id="tablaCitas" class="vl-table" width="100%">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Oficio</th>
+              <th>Fecha</th>
+              <th>Hora</th>
+              <th>Área</th>
+              <th>Tipo</th>
+              <th>Estatus</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ PANEL FLOTILLA ══════ -->
+  <div id="panelFlotilla" style="display:none;">
+    <div class="stats-bar">
+      <div class="stat-card stat-filtro-flot active-filter-flot" id="cfTodos"
+        onclick="setFilterFlotilla('todos', 'cfTodos')">
+        <div class="stat-num" id="statVehTotal">—</div>
+        <div class="stat-label">Total</div>
+      </div>
+      <div class="stat-card stat-filtro-flot green" id="cfDisp"
+        onclick="setFilterFlotilla('DISPONIBLE', 'cfDisp')">
+        <div class="stat-num" id="statVehDisp">—</div>
+        <div class="stat-label">Disponibles</div>
+      </div>
+      <div class="stat-card stat-filtro-flot accent" id="cfRuta"
+        onclick="setFilterFlotilla('EN RUTA', 'cfRuta')">
+        <div class="stat-num" id="statVehRuta">—</div>
+        <div class="stat-label">En ruta</div>
+      </div>
+    </div>
+    <div class="filter-bar" style="justify-content:flex-end;">
+      <button class="btn-icon-sm" onclick="cargarFlotilla()" title="Actualizar">
+        <i class="bi bi-arrow-clockwise"></i>
+      </button>
+    </div>
+    <div class="dt-wrap">
+      <div class="loading" id="loadingFlotilla"><i class="bi bi-hourglass-split"></i> Cargando flotilla...</div>
+      <div id="tablaFlotillaWrap" style="display:none;">
+        <table id="tablaFlotilla" class="vl-table" width="100%">
+          <thead>
+            <tr>
+              <th>Placas</th>
+              <th>Conductor</th>
+              <th>Destino</th>
+              <th>Salida</th>
+              <th>Regreso</th>
+              <th>Estatus</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ PANEL REPORTES ══════ -->
+  <div id="panelReportes" style="display:none;">
+    <div class="reporte-wrap">
+      <div class="reporte-section">
+        <div class="reporte-title"><i class="bi bi-list-ul"></i> Reporte de Registros</div>
+        <div class="reporte-form">
+          <div class="rf-row">
+            <div class="rf-group">
+              <label class="rf-label">Desde</label>
+              <input type="date" class="rf-input" id="rRegDesde" />
+            </div>
+            <div class="rf-group">
+              <label class="rf-label">Hasta</label>
+              <input type="date" class="rf-input" id="rRegHasta" />
+            </div>
+            <div class="rf-group">
+              <label class="rf-label">Estatus</label>
+              <select class="rf-input" id="rRegEstatus">
+                <option value="todos">Todos</option>
+                <option value="ACTIVO">En sitio</option>
+                <option value="CERRADO">Con salida</option>
+              </select>
+            </div>
+            <div class="rf-group">
+              <label class="rf-label">Vehículo</label>
+              <select class="rf-input" id="rRegVehiculo">
+                <option value="todos">Todos</option>
+                <option value="si">Con vehículo</option>
+                <option value="no">Sin vehículo</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn-reporte" onclick="previsualizarReporte('registros')">
+            <i class="bi bi-eye"></i> Previsualizar
+          </button>
+        </div>
+      </div>
+      <div class="reporte-section">
+        <div class="reporte-title"><i class="bi bi-calendar-event"></i> Reporte de Citas</div>
+        <div class="reporte-form">
+          <div class="rf-row">
+            <div class="rf-group">
+              <label class="rf-label">Desde</label>
+              <input type="date" class="rf-input" id="rCitaDesde" />
+            </div>
+            <div class="rf-group">
+              <label class="rf-label">Hasta</label>
+              <input type="date" class="rf-input" id="rCitaHasta" />
+            </div>
+            <div class="rf-group">
+              <label class="rf-label">Tipo</label>
+              <select class="rf-input" id="rCitaTipo">
+                <option value="todos">Todos</option>
+                <option value="visita">Visita</option>
+                <option value="vehiculo">Vehículo</option>
+                <option value="ambos">Ambos</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn-reporte" onclick="previsualizarReporte('citas')">
+            <i class="bi bi-eye"></i> Previsualizar
+          </button>
+        </div>
+      </div>
+      <div class="reporte-section">
+        <div class="reporte-title"><i class="bi bi-truck"></i> Reporte de Flotilla</div>
+        <div class="reporte-form">
+          <div class="rf-row">
+            <div class="rf-group">
+              <label class="rf-label">Desde</label>
+              <input type="date" class="rf-input" id="rFlotDesde" />
+            </div>
+            <div class="rf-group">
+              <label class="rf-label">Hasta</label>
+              <input type="date" class="rf-input" id="rFlotHasta" />
+            </div>
+            <div class="rf-group">
+              <label class="rf-label">Estatus</label>
+              <select class="rf-input" id="rFlotEstatus">
+                <option value="todos">Todos</option>
+                <option value="EN RUTA">En ruta</option>
+                <option value="COMPLETADO">Completado</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn-reporte" onclick="previsualizarReporte('flotilla')">
+            <i class="bi bi-eye"></i> Previsualizar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PREVIEW REPORTE -->
+  <div class="detail-panel" id="reportePreview">
+    <div class="detail-header">
+      <button class="btn-back-detail" onclick="cerrarPreview()">
+        <i class="bi bi-chevron-left"></i>
+      </button>
+      <span class="detail-title" id="prevTitulo">Previsualizar reporte</span>
+    </div>
+    <div class="detail-body">
+      <div class="prev-summary">
+        <div class="prev-stat">
+          <div class="prev-num" id="prevTotal">—</div>
+          <div class="prev-label">registros encontrados</div>
+        </div>
+        <div class="prev-filtros" id="prevFiltros"></div>
+      </div>
+      <div class="prev-label-sec">Muestra de los primeros registros:</div>
+      <div id="prevLista"></div>
+      <div style="padding:1rem;">
+        <button class="btn-reporte" style="width:100%;justify-content:center;" onclick="confirmarReporte()">
+          <i class="bi bi-download"></i> Confirmar y Descargar PDF
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL DETALLE -->
+  <div class="detail-panel" id="detailPanel">
+    <div class="detail-header">
+      <button class="btn-back-detail" onclick="cerrarDetalle()">
+        <i class="bi bi-chevron-left"></i>
+      </button>
+      <span class="detail-title" id="detailTitle">Detalle</span>
+    </div>
+    <div class="detail-body" id="detailBody"></div>
+  </div>
+
+  <!-- SALIDA FORM PANEL -->
+  <div class="detail-panel" id="salidaPanel">
+    <div class="detail-header">
+      <button class="btn-back-detail" onclick="cerrarSalidaPanel()">
+        <i class="bi bi-chevron-left"></i>
+      </button>
+      <span class="detail-title">Registrar Salida</span>
+    </div>
+    <div class="detail-body" id="salidaBody"></div>
+  </div>
+
+  <script src="js/navbar.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script>
+    let tabActual = 'registros';
+
+    cargarNavbar({ titulo: 'Dashboard' }).then(() => {
+      cargarRegistros();
+    });
+
+    function recargarTab() {
+      if (tabActual === 'registros') cargarRegistros();
+      else if (tabActual === 'citas') cargarCitas();
+      else cargarFlotilla();
+    }
+
+    function abrirDetalle(titulo, html) {
+      document.getElementById('detailTitle').textContent = titulo;
+      document.getElementById('detailBody').innerHTML = html;
+      document.getElementById('detailPanel').classList.add('open');
+      document.body.classList.add('no-scroll');
+    }
+
+    function cerrarDetalle() {
+      document.getElementById('detailPanel').classList.remove('open');
+      document.body.classList.remove('no-scroll');
+    }
+
+    function abrirSalidaPanel(html) {
+      document.getElementById('salidaBody').innerHTML = html;
+      document.getElementById('salidaPanel').classList.add('open');
+      document.body.classList.add('no-scroll');
+    }
+
+    function cerrarSalidaPanel() {
+      document.getElementById('salidaPanel').classList.remove('open');
+      document.body.classList.remove('no-scroll');
+    }
+  </script>
+</body>
+
+</html>

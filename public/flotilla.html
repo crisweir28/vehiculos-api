@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VehiLog — Flotilla Corporativa</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <script src="personalizacion/js/config.js"></script>
+  <link rel="stylesheet" href="css/navbar.css"/>
+  <link rel="stylesheet" href="css/flotilla.css"/>
+
+  <!-- Validación sesión (page reload fix) -->
+  <script src="js/permiso.js"></script>
+</head>
+
+<body>
+
+<div id="navbar"></div>
+
+<div class="main-wrap">
+
+  <!-- ─────────────── ALTA VEHÍCULO ─────────────── -->
+  <div class="section-card">
+    <div class="card-title">
+      <i class="bi bi-plus-circle"></i> Alta de Vehículo
+    </div>
+
+    <div class="form-grid">
+
+      <input id="placas" class="field-input" placeholder="Placas *"/>
+      <input id="marca" class="field-input" placeholder="Marca *"/>
+      <input id="modelo" class="field-input" placeholder="Modelo *"/>
+      <input id="color" class="field-input" placeholder="Color *"/>
+      <input id="anio" class="field-input" type="number" placeholder="Año"/>
+      <input id="numEcon" class="field-input" placeholder="VIN"/>
+
+      <button class="btn-add" id="btnAlta" onclick="darDeAlta()">
+        <i class="bi bi-plus-lg"></i> Registrar
+      </button>
+
+    </div>
+
+    <div class="alert-ok" id="altaOk"></div>
+    <div class="alert-err" id="altaErr"></div>
+  </div>
+
+  <!-- ─────────────── CATÁLOGO ─────────────── -->
+  <div class="catalog-header">
+    <span class="catalog-title">Vehículos Registrados</span>
+    <button class="btn-refresh" onclick="cargarVehiculos()">
+      <i class="bi bi-arrow-clockwise"></i>
+    </button>
+  </div>
+
+  <div class="loading" id="loadingVeh">
+    <i class="bi bi-hourglass-split"></i> Cargando...
+  </div>
+
+  <div class="empty-state" id="emptyVeh" style="display:none">
+    <i class="bi bi-truck"></i>
+    <p>No hay vehículos registrados.</p>
+  </div>
+
+  <div class="veh-grid" id="vehGrid"></div>
+
+</div>
+
+<!-- ─────────────── PANEL HISTORIAL ─────────────── -->
+<div class="hist-overlay" id="histOverlay" onclick="cerrarHistorial()"></div>
+
+<div class="hist-panel" id="histPanel">
+
+  <div class="hist-header">
+    <button class="btn-back" onclick="cerrarHistorial()">
+      <i class="bi bi-chevron-left"></i>
+    </button>
+    <span class="hist-title">Historial</span>
+  </div>
+
+  <!-- INFO VEHÍCULO -->
+  <div class="hist-veh-section" id="histVehInfo"></div>
+
+  <!-- TABS -->
+  <div class="hist-tabs">
+    <button class="hist-tab active" id="tabUsuarios"
+            onclick="cambiarTab('usuarios')">
+      <i class="bi bi-people"></i> Usuarios
+    </button>
+
+    <button class="hist-tab" id="tabMantenimiento"
+            onclick="cambiarTab('mantenimiento')">
+      <i class="bi bi-tools"></i> Mantenimiento
+    </button>
+  </div>
+
+  <!-- CONTENIDO TABS -->
+  <div class="hist-body" id="histUsuarios"></div>
+
+  <div class="hist-body" id="histMantenimiento" style="display:none;"></div>
+
+</div>
+
+<!-- ─────────────── SCRIPTS ─────────────── -->
+<script src="js/navbar.js"></script>
+<script>cargarNavbar({ titulo: 'Flotilla Corporativa' });</script>
+<script src="js/flotilla.js"></script>
+
+</body>
+</html>

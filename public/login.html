@@ -1,0 +1,152 @@
+<!--public/login.html-->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VehiLog — Iniciar Sesión</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/login.css"/>
+  <script src="personalizacion/js/config.js"></script>
+</head>
+<body>
+
+  <div class="screen">
+
+    <div class="hero">
+      <div class="logo-mark" id="loginLogoFallback">
+        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="48" height="48" rx="12" fill="#111"/>
+          <path d="M14 30 L24 16 L34 30" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <circle cx="24" cy="32" r="2.5" fill="white"/>
+        </svg>
+      </div>
+      <img id="loginLogo" src="" alt="Logo"
+        style="display:none;max-width:180px;max-height:120px;width:auto;height:auto;object-fit:contain;border-radius:12px;margin:0 auto 0.75rem;"/>
+      <h1 class="brand-name app-nombre">VehiLog</h1>
+      <p class="brand-sub empresa-nombre">Control Vehicular · SISSA Monitoring</p>
+    </div>
+
+    <!-- PANEL: LOGIN -->
+    <div class="card" id="panelLogin">
+      <div class="mb-field">
+        <label class="field-label" for="usuario">Usuario</label>
+        <input type="text" id="usuario" class="field-input" placeholder="Jara Martins" autocomplete="username"/>
+      </div>
+      <div class="mb-field">
+        <label class="field-label" for="password">Contraseña</label>
+        <div class="input-wrap">
+          <input type="password" id="password" class="field-input" placeholder="••••••"
+            autocomplete="current-password" onkeydown="if(event.key==='Enter') login()"/>
+          <button class="toggle-pass" onclick="togglePass()" tabindex="-1" aria-label="Mostrar contraseña">
+            <svg id="eyeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="error-msg" id="errorMsg"></div>
+      <button class="btn-login" id="btnLogin" onclick="login()">Iniciar sesión</button>
+      <p class="forgot-link">
+        <a href="#" onclick="mostrarRecuperar(); return false;">¿Olvidaste tu contraseña?</a>
+      </p>
+    </div>
+
+    <!-- PANEL: RECUPERAR CONTRASEÑA -->
+    <div class="card" id="panelRecuperar" style="display:none;">
+      <div style="margin-bottom:1rem;">
+        <div style="font-weight:700;font-size:1rem;margin-bottom:0.35rem;">Recuperar contraseña</div>
+        <div style="font-size:0.82rem;color:#8a8a8e;">Ingresa tu correo y te enviaremos un enlace para restablecer tu contraseña.</div>
+      </div>
+      <div class="mb-field">
+        <label class="field-label" for="emailRecuperar">Correo electrónico</label>
+        <input type="email" id="emailRecuperar" class="field-input" placeholder="tu@correo.com"
+          onkeydown="if(event.key==='Enter') enviarRecuperar()"/>
+      </div>
+      <div class="error-msg" id="errorRecuperar"></div>
+      <button class="btn-login" id="btnRecuperar" onclick="enviarRecuperar()">
+        Enviar enlace
+      </button>
+      <p class="forgot-link">
+        <a href="#" onclick="mostrarLogin(); return false;">← Volver al inicio de sesión</a>
+      </p>
+    </div>
+
+    <!-- PANEL: CORREO ENVIADO -->
+    <div class="card" id="panelEnviado" style="display:none;text-align:center;">
+      <div style="font-size:2.5rem;margin-bottom:0.75rem;">📧</div>
+      <div style="font-weight:700;font-size:1rem;margin-bottom:0.5rem;">Revisa tu correo</div>
+      <div style="font-size:0.82rem;color:#8a8a8e;margin-bottom:1.5rem;">
+        Si el correo está registrado, recibirás un enlace para restablecer tu contraseña en los próximos minutos.
+      </div>
+      <p class="forgot-link">
+        <a href="#" onclick="mostrarLogin(); return false;">← Volver al inicio de sesión</a>
+      </p>
+    </div>
+
+    <div class="guest-link">
+      <span class="guest-divider">¿Tienes una visita programada?</span>
+      <a class="btn-agendar" href="citas/agenda.html">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="2"/>
+          <line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/>
+          <line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        Agendar Cita
+      </a>
+    </div>
+
+    <p class="footer-txt">v1.1 · <span class="empresa-nombre">SISSA Monitoring Integral S.A. de C.V.</span></p>
+  </div>
+
+  <script src="js/login.js"></script>
+  <script>
+    function mostrarRecuperar() {
+      document.getElementById('panelLogin').style.display     = 'none';
+      document.getElementById('panelRecuperar').style.display = 'block';
+      document.getElementById('panelEnviado').style.display   = 'none';
+      document.getElementById('emailRecuperar').focus();
+    }
+
+    function mostrarLogin() {
+      document.getElementById('panelLogin').style.display     = 'block';
+      document.getElementById('panelRecuperar').style.display = 'none';
+      document.getElementById('panelEnviado').style.display   = 'none';
+    }
+
+    async function enviarRecuperar() {
+      const email  = document.getElementById('emailRecuperar').value.trim();
+      const errEl  = document.getElementById('errorRecuperar');
+      const btn    = document.getElementById('btnRecuperar');
+      errEl.style.display = 'none';
+
+      if (!email) {
+        errEl.textContent = 'Ingresa tu correo electrónico.';
+        errEl.style.display = 'block'; return;
+      }
+
+      btn.disabled = true; btn.textContent = 'Enviando...';
+
+      try {
+        const res  = await fetch('/api/auth/recuperar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+        // Siempre mostrar panel de enviado para no revelar si el correo existe
+        document.getElementById('panelRecuperar').style.display = 'none';
+        document.getElementById('panelEnviado').style.display   = 'block';
+      } catch {
+        errEl.textContent = 'No se pudo conectar. Intenta de nuevo.';
+        errEl.style.display = 'block';
+      }
+
+      btn.disabled = false; btn.textContent = 'Enviar enlace';
+    }
+  </script>
+</body>
+</html>

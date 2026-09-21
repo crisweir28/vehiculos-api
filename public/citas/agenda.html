@@ -1,0 +1,116 @@
+<!--public/citas/agenda.html-->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Citas — Agenda</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+  <link rel="stylesheet" href="css/agenda.css"/>
+  <script src="../personalizacion/js/config.js"></script>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="app-header">
+    
+    <span class="step-indicator">Paso 1 de 5</span>
+  </header>
+
+  <!-- PROGRESS -->
+  <div class="progress-wrap">
+    <div class="steps-track">
+      <div class="step-item active">
+        <div class="step-circle">1</div>
+        <div class="step-label">Agenda</div>
+      </div>
+      <div class="step-connector"></div>
+      <div class="step-item">
+        <div class="step-circle">2</div>
+        <div class="step-label">Datos</div>
+      </div>
+      <div class="step-connector"></div>
+      <div class="step-item">
+        <div class="step-circle">3</div>
+        <div class="step-label">Vehículo</div>
+      </div>
+      <div class="step-connector"></div>
+      <div class="step-item">
+        <div class="step-circle">4</div>
+        <div class="step-label">Documentos</div>
+      </div>
+      <div class="step-connector"></div>
+      <div class="step-item">
+        <div class="step-circle">5</div>
+        <div class="step-label">Verificar</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENIDO -->
+  <div class="main-wrap">
+
+    <!-- CALENDARIO -->
+    <div class="section-card">
+      <div class="section-label">
+        <i class="bi bi-calendar3"></i> Fecha de la cita <span class="req">*</span>
+      </div>
+      <div class="cal-wrap">
+        <div class="cal-header">
+          <button class="cal-nav" onclick="cambiarMes(-1)">
+            <i class="bi bi-chevron-left"></i>
+          </button>
+          <div class="cal-mes" id="calMes"></div>
+          <button class="cal-nav" onclick="cambiarMes(1)">
+            <i class="bi bi-chevron-right"></i>
+          </button>
+        </div>
+        <div class="cal-grid" id="calGrid">
+          <div class="cal-dow">Dom</div>
+          <div class="cal-dow">Lun</div>
+          <div class="cal-dow">Mar</div>
+          <div class="cal-dow">Mié</div>
+          <div class="cal-dow">Jue</div>
+          <div class="cal-dow">Vie</div>
+          <div class="cal-dow">Sáb</div>
+        </div>
+      </div>
+      <div class="invalid-msg" id="fechaError" style="display:none;">
+        <i class="bi bi-exclamation-circle"></i> Selecciona una fecha.
+      </div>
+    </div>
+
+    <!-- HORA -->
+    <div class="section-card">
+      <div class="section-label">
+        <i class="bi bi-clock"></i> Hora de entrada <span class="req">*</span>
+      </div>
+      <div class="hora-grid" id="horaGrid"></div>
+      <div class="invalid-msg" id="horaError" style="display:none;">
+        <i class="bi bi-exclamation-circle"></i> Selecciona una hora.
+      </div>
+    </div>
+
+    <!-- RESUMEN -->
+    <div id="seleccionResumen" style="display:none;">
+      <div class="seleccion-badge">
+        <i class="bi bi-calendar-check"></i>
+        <span id="resumenTexto"></span>
+      </div>
+    </div>
+
+    <!-- BOTÓN -->
+    <div class="action-row single">
+      <button class="btn-primary" onclick="continuar()">
+        Continuar <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+
+  </div>
+
+  <p class="app-footer">VehiLog · Sistema de Control Vehicular · v1.1</p>
+
+  <script src="js/agenda.js"></script>
+</body>
+</html>

@@ -1,0 +1,148 @@
+/*public/css/login.css*/
+/* ─── RESET ──────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem 1rem;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── PANTALLA ───────────────────────────────────────── */
+.screen {
+  width: 100%;
+  max-width: 390px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+/* ─── HERO / LOGO ────────────────────────────────────── */
+.hero {
+  text-align: center;
+  padding: 2.5rem 1rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.logo-mark { display: inline-flex; margin-bottom: 1rem; }
+.logo-mark svg { border-radius: 14px; box-shadow: var(--shadow); }
+
+.brand-name {
+  font-size: 1.75rem; font-weight: 700;
+  letter-spacing: -0.5px; color: var(--text); line-height: 1;
+}
+.brand-sub {
+  font-size: 0.75rem; color: var(--muted);
+  margin-top: 0.35rem; letter-spacing: 0.3px;
+}
+
+/* ─── CARD ───────────────────────────────────────────── */
+.card {
+  width: 100%;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 1.75rem 1.5rem;
+  box-shadow: var(--shadow);
+}
+
+/* ─── CAMPOS ─────────────────────────────────────────── */
+.mb-field { margin-bottom: 1.1rem; }
+
+.field-label {
+  display: block; font-size: 0.7rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.8px;
+  color: var(--muted); margin-bottom: 0.4rem;
+}
+
+.field-input {
+  width: 100%; background: var(--bg); border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm); color: var(--text);
+  font-family: var(--font); font-size: 0.95rem;
+  padding: 0.7rem 0.9rem; outline: none;
+  transition: border-color 0.18s, box-shadow 0.18s; -webkit-appearance: none;
+}
+.field-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(17,17,17,0.08); }
+.field-input::placeholder { color: var(--muted); opacity: 0.6; }
+
+/* ─── PASSWORD WRAP ──────────────────────────────────── */
+.input-wrap { position: relative; }
+.input-wrap .field-input { padding-right: 2.75rem; }
+
+.toggle-pass {
+  position: absolute; right: 0.7rem; top: 50%; transform: translateY(-50%);
+  background: transparent; border: none; color: var(--muted);
+  cursor: pointer; padding: 0.25rem; line-height: 0; transition: color 0.15s;
+}
+.toggle-pass:hover { color: var(--accent); }
+
+/* ─── ERROR ──────────────────────────────────────────── */
+.error-msg {
+  display: none;
+  background: rgba(232,68,26,0.07); border: 1px solid rgba(232,68,26,0.25);
+  color: var(--danger); border-radius: var(--radius-sm);
+  padding: 0.6rem 0.85rem; font-size: 0.82rem;
+  margin-bottom: 1rem; line-height: 1.4;
+}
+
+/* ─── BOTÓN LOGIN ────────────────────────────────────── */
+.btn-login {
+  width: 100%; background: var(--accent); color: #fff;
+  font-family: var(--font); font-size: 0.95rem; font-weight: 600;
+  letter-spacing: 0.2px; border: none; border-radius: var(--radius-sm);
+  padding: 0.85rem; cursor: pointer;
+  transition: opacity 0.18s, transform 0.15s;
+  margin-top: 0.25rem; -webkit-tap-highlight-color: transparent;
+}
+.btn-login:active:not(:disabled) { opacity: 0.85; transform: scale(0.99); }
+.btn-login:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ─── OLVIDÉ CONTRASEÑA ──────────────────────────────── */
+.forgot-link { text-align: center; margin-top: 1rem; font-size: 0.8rem; }
+.forgot-link a { color: var(--muted); text-decoration: none; transition: color 0.15s; }
+.forgot-link a:hover { color: var(--accent); }
+
+/* ─── FOOTER ─────────────────────────────────────────── */
+.footer-txt {
+  font-size: 0.68rem; color: var(--muted);
+  text-align: center; margin-top: 2rem; letter-spacing: 0.3px;
+}
+
+/* ─── AGENDAR CITA ───────────────────────────────────── */
+.guest-link {
+  width: 100%; display: flex; flex-direction: column;
+  align-items: center; gap: 0.75rem; margin-top: 1.25rem;
+}
+
+.guest-divider {
+  font-size: 0.72rem; color: var(--muted); text-align: center;
+  position: relative; width: 100%;
+  display: flex; align-items: center; gap: 0.75rem;
+}
+.guest-divider::before,
+.guest-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+.btn-agendar {
+  width: 100%; background: var(--surface); color: var(--text);
+  border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+  padding: 0.78rem 1.25rem; font-family: var(--font);
+  font-size: 0.92rem; font-weight: 600; text-decoration: none;
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+  transition: border-color 0.15s, background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-agendar:hover { border-color: var(--accent); background: var(--bg); }
+.btn-agendar:active { opacity: 0.82; transform: scale(0.98); }
+
+/* ─── RESPONSIVE ─────────────────────────────────────── */
+@media (max-width: 390px) {
+  .hero { padding-top: 1.5rem; }
+  .card { border-radius: var(--radius-sm); padding: 1.5rem 1.25rem; }
+}

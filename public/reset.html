@@ -1,0 +1,148 @@
+<!--public/reset.html-->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VehiLog — Restablecer Contraseña</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/login.css"/>
+  <script src="personalizacion/js/config.js"></script>
+</head>
+<body>
+
+  <div class="screen">
+
+    <div class="hero">
+      <div class="logo-mark" id="loginLogoFallback">
+        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="48" height="48" rx="12" fill="#111"/>
+          <path d="M14 30 L24 16 L34 30" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <circle cx="24" cy="32" r="2.5" fill="white"/>
+        </svg>
+      </div>
+      <img id="loginLogo" src="" alt="Logo" style="display:none;width:80px;height:80px;object-fit:cover;border-radius:50%;margin-bottom:0.5rem;"/>
+      <h1 class="brand-name app-logo-fallback app-nombre">VehiLog</h1>
+      <p class="brand-sub">Nueva contraseña</p>
+    </div>
+
+    <!-- PANEL: NUEVA CONTRASEÑA -->
+    <div class="card" id="panelReset">
+      <div class="mb-field">
+        <label class="field-label" for="newPassword">Nueva contraseña</label>
+        <div class="input-wrap">
+          <input type="password" id="newPassword" class="field-input"
+            placeholder="Mínimo 6 caracteres"/>
+          <button class="toggle-pass" onclick="togglePass('newPassword','eye1')" tabindex="-1">
+            <svg id="eye1" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="mb-field">
+        <label class="field-label" for="confirmPassword">Confirmar contraseña</label>
+        <div class="input-wrap">
+          <input type="password" id="confirmPassword" class="field-input"
+            placeholder="Repite la contraseña"/>
+          <button class="toggle-pass" onclick="togglePass('confirmPassword','eye2')" tabindex="-1">
+            <svg id="eye2" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="error-msg" id="errorMsg"></div>
+
+      <button class="btn-login" id="btnReset" onclick="resetPassword()">
+        Guardar nueva contraseña
+      </button>
+    </div>
+
+    <!-- PANEL: ÉXITO -->
+    <div class="card" id="panelOk" style="display:none;text-align:center;">
+      <div style="font-size:2.5rem;margin-bottom:0.75rem;">✅</div>
+      <div style="font-weight:700;font-size:1.1rem;margin-bottom:0.5rem;">¡Contraseña actualizada!</div>
+      <div style="font-size:0.85rem;color:#8a8a8e;margin-bottom:1.5rem;">Ya puedes iniciar sesión con tu nueva contraseña.</div>
+      <a class="btn-login" href="login.html" style="display:block;text-align:center;text-decoration:none;">
+        Ir al inicio de sesión
+      </a>
+    </div>
+
+    <!-- PANEL: TOKEN INVÁLIDO -->
+    <div class="card" id="panelError" style="display:none;text-align:center;">
+      <div style="font-size:2.5rem;margin-bottom:0.75rem;">❌</div>
+      <div style="font-weight:700;font-size:1.1rem;margin-bottom:0.5rem;">Enlace inválido o expirado</div>
+      <div style="font-size:0.85rem;color:#8a8a8e;margin-bottom:1.5rem;">Solicita un nuevo enlace de recuperación.</div>
+      <a class="btn-login" href="login.html" style="display:block;text-align:center;text-decoration:none;">
+        Volver al inicio
+      </a>
+    </div>
+
+    <p class="footer-txt">v1.1 · <span class="empresa-nombre">SISSA Monitoring Integral S.A. de C.V.</span></p>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const token  = params.get('token');
+
+    if (!token) {
+      document.getElementById('panelReset').style.display = 'none';
+      document.getElementById('panelError').style.display = 'block';
+    }
+
+    function togglePass(inputId, eyeId) {
+      const input = document.getElementById(inputId);
+      input.type = input.type === 'password' ? 'text' : 'password';
+    }
+
+    async function resetPassword() {
+      const password = document.getElementById('newPassword').value;
+      const confirm  = document.getElementById('confirmPassword').value;
+      const errEl    = document.getElementById('errorMsg');
+      errEl.style.display = 'none';
+
+      if (!password || password.length < 6) {
+        errEl.textContent = 'La contraseña debe tener al menos 6 caracteres.';
+        errEl.style.display = 'block'; return;
+      }
+      if (password !== confirm) {
+        errEl.textContent = 'Las contraseñas no coinciden.';
+        errEl.style.display = 'block'; return;
+      }
+
+      const btn = document.getElementById('btnReset');
+      btn.disabled = true; btn.textContent = 'Guardando...';
+
+      try {
+        const res  = await fetch('/api/auth/reset', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token, password })
+        });
+        const data = await res.json();
+        if (!res.ok || !data.ok) {
+          errEl.textContent = data.error || 'Error al actualizar.';
+          errEl.style.display = 'block';
+          btn.disabled = false; btn.textContent = 'Guardar nueva contraseña';
+          if (data.error?.includes('expirado') || data.error?.includes('inválido')) {
+            document.getElementById('panelReset').style.display = 'none';
+            document.getElementById('panelError').style.display = 'block';
+          }
+          return;
+        }
+        document.getElementById('panelReset').style.display = 'none';
+        document.getElementById('panelOk').style.display   = 'block';
+      } catch {
+        errEl.textContent = 'No se pudo conectar.';
+        errEl.style.display = 'block';
+        btn.disabled = false; btn.textContent = 'Guardar nueva contraseña';
+      }
+    }
+  </script>
+</body>
+</html>

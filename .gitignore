@@ -1,0 +1,26 @@
+# Dependencias
+node_modules/
+
+# Variables de entorno / secretos
+.env
+.env.*
+*.pem
+*.key
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# Build / temporales
+dist/
+build/
+tmp/

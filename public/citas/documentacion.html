@@ -1,0 +1,125 @@
+<!--public/citas/documentacion.html-->
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Citas — Documentación</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <link rel="stylesheet" href="css/documentacion.css" />
+   <script src="../personalizacion/js/config.js"></script>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header class="app-header">
+    
+    <span class="step-indicator">Paso 4 de 5</span>
+  </header>
+
+  <!-- PROGRESS -->
+  <div class="progress-wrap">
+    <div class="steps-track">
+      <div class="step-item done">
+        <div class="step-circle"><i class="bi bi-check"></i></div>
+        <div class="step-label">Agenda</div>
+      </div>
+      <div class="step-connector done"></div>
+      <div class="step-item done">
+        <div class="step-circle"><i class="bi bi-check"></i></div>
+        <div class="step-label">Datos</div>
+      </div>
+      <div class="step-connector done"></div>
+      <div class="step-item done">
+        <div class="step-circle"><i class="bi bi-check"></i></div>
+        <div class="step-label">Vehículo</div>
+      </div>
+      <div class="step-connector done"></div>
+      <div class="step-item active">
+        <div class="step-circle">4</div>
+        <div class="step-label">Docs</div>
+      </div>
+      <div class="step-connector"></div>
+      <div class="step-item">
+        <div class="step-circle">5</div>
+        <div class="step-label">Verificar</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENIDO -->
+  <div class="main-wrap">
+
+    <!-- INFO -->
+    <div class="info-banner">
+      <i class="bi bi-info-circle"></i>
+      Recuerda traer los siguientes documentos al momento de tu visita.
+    </div>
+
+    <div class="section-card" id="checkList">
+
+      <div class="check-item" data-key="oficio">
+        <div class="check-content">
+          <div class="check-title">N° de Oficio <span class="badge-req">Requerido</span></div>
+          <div class="check-desc">Número de oficio o referencia de la visita que avala el acceso.</div>
+        </div>
+      </div>
+
+      <div class="check-item" data-key="licencia" id="itemLicencia">
+        <div class="check-content">
+          <div class="check-title">Licencia de Conducir <span class="badge-req">Requerido</span></div>
+          <div class="check-desc">Requerida únicamente si el visitante ingresa con vehículo.</div>
+        </div>
+      </div>
+
+      <div class="check-item" data-key="ine">
+        <div class="check-content">
+          <div class="check-title">INE / Documento Oficial <span class="badge-req">Requerido</span></div>
+          <div class="check-desc">Identificación oficial vigente con fotografía.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOTONES -->
+    <div class="action-row">
+      <a class="btn-secondary" id="btnBack" href="datos.html">
+        <i class="bi bi-chevron-left"></i> Regresar
+      </a>
+      <button class="btn-primary" onclick="continuar()">
+        Ver resumen <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+
+  </div>
+
+  <p class="app-footer">VehiLog · Sistema de Control Vehicular · v1.1</p>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const cita = getCita();
+      if (cita.tipo === 'visita') {
+        document.getElementById('btnBack').href = 'datos.html';
+        document.getElementById('itemLicencia').style.display = 'none';
+      } else {
+        document.getElementById('btnBack').href = 'vehiculo.html';
+      }
+    });
+
+    function continuar() {
+      const cita = getCita();
+      cita.docsCheck = ['oficio', 'ine'];
+      const licencia = document.getElementById('itemLicencia');
+      if (licencia && licencia.style.display !== 'none') cita.docsCheck.push('licencia');
+      setCita(cita);
+      window.location.href = 'verificar.html';
+    }
+
+    function getCita() { try { return JSON.parse(sessionStorage.getItem('cita_draft') || '{}'); } catch { return {}; } }
+    function setCita(d) { sessionStorage.setItem('cita_draft', JSON.stringify(d)); }
+  </script>
+</body>
+
+</html>

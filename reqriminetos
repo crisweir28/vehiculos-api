@@ -1,0 +1,121 @@
+# VehiLog — Requerimientos del Proyecto
+
+## Backend (Node.js / npm)
+
+Dependencias de servidor que se infieren del código (`package.json`):
+
+```json
+{
+  "dependencies": {
+    "express": "^4.x",
+    "mysql2": "^3.x",
+    "pdfkit": "^0.14.x",
+    "nodemailer": "^6.x",
+    "dotenv": "^16.x"
+  }
+}
+```
+
+### Detalle de uso
+- **express** — servidor HTTP, rutas (`routes/*.js`), middleware (`middleware/auth.js`)
+- **mysql2** — conexión a MySQL con `pool.execute()` y `CALL` a stored procedures (`db/connection.js`)
+- **pdfkit** — generación de reportes PDF (`routes/reportes.js`)
+- **nodemailer** — envío de correos transaccionales (`utils/mailer.js`): confirmación de citas, recuperación de contraseña, cancelaciones
+- **dotenv** — variables de entorno (credenciales de BD, SMTP, puerto)
+
+Instalación:
+```bash
+npm install
+```
+
+Ejecucion:
+```bash
+node server.js
+```
+---
+
+## Base de datos — MySQL
+
+**Versión recomendada:** MySQL 8.x (por soporte nativo de tipo `JSON` y stored procedures)
+
+### Tablas
+- `usuarios`, `sesiones`, `resets`
+- `areas`
+- `config`
+- `vehiculos`, `movimientos`
+- `citas`
+- `registros`
+
+### Vistas
+- `v_registros_activos`
+- `v_resumen_flotilla`
+- `v_citas_hoy`
+- `v_dashboard_stats`
+
+### Stored Procedures
+- `sp_crear_vehiculo`
+- `sp_registrar_salida_vehiculo`
+- `sp_registrar_entrada_vehiculo`
+- `sp_cambiar_estatus_vehiculo`
+- `sp_guardar_config`
+- `sp_registrar_entrada`
+- `sp_registrar_salida`
+- `sp_crear_cita`
+- `sp_limpiar_citas_caducadas`
+
+---
+
+## Frontend — CDNs (sin instalación, vía `<script>`/`<link>`)
+
+| Librería | Versión | Uso |
+|---|---|---|
+| Google Fonts — Inter | — | Tipografía base |
+| Bootstrap Icons | 1.11.3 | Iconografía en toda la app |
+| jQuery | 3.7.1 | Requerido por DataTables |
+| DataTables | 1.13.7 | Tablas de registros, citas, flotilla |
+| DataTables Responsive | 2.5.0 | Adaptabilidad de tablas en móvil |
+| DataTables i18n (es-MX) | plug-ins 1.13.7 | Traducción de controles de tabla |
+| SweetAlert2 | 11 | Alertas, confirmaciones y modales de feedback |
+| Bootstrap | 5.3.3 | **Obsoleto** — solo usado en archivos eliminados (`entrada-corp`, `salida-corp`) |
+
+### Fuentes adicionales (solo en `entrada-corp`/`salida-corp`, eliminados)
+- Barlow / Barlow Condensed — ya no se usan tras la depuración
+
+---
+
+## Librerías locales (archivo físico en `/public`)
+- `qrcode.min.js` — generación de códigos QR (verificación de citas)
+
+---
+
+## Variables de entorno esperadas (`.env`)
+
+```
+DB_HOST=
+DB_USER=
+DB_PASSWORD=
+DB_NAME=
+DB_PORT=3306
+
+SMTP_HOST=
+SMTP_PORT=
+SMTP_USER=
+SMTP_PASSWORD=
+SMTP_FROM=
+
+PORT=3300
+```
+
+---
+
+## Infraestructura objetivo (pendiente)
+- **Azure Container Apps** — despliegue del backend Node.js
+- **Azure Files** — almacenamiento persistente (si aplica para logos/uploads)
+- **Android (Java)** — app nativa `com.sissa.vehilog`, API 26 mínimo, consumiendo la misma API REST
+
+---
+
+## Notas de depuración relevantes
+- `migrate.js` — script de un solo uso (migración JSON → MySQL), ya no se ejecuta en producción, mover a `scripts/` o eliminar
+- `entrada-corp.html/js/css` y `salida-corp.html/css` — **eliminados**, reemplazados por tabs unificados dentro de `entrada.html`/`salida.html`
+- Todas las paginas migraron `alert()`/`confirm()` nativos a SweetAlert2

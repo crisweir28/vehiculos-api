@@ -1,0 +1,286 @@
+
+<!--public/entrada.html-->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VehiLog — Entrada</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+  <!-- DataTables -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css" />
+  <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css" />
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <link rel="stylesheet" href="css/tabla.css" />
+  <link rel="stylesheet" href="css/navbar.css" />
+  <link rel="stylesheet" href="css/entrada.css" />
+  <script src="personalizacion/js/config.js"></script>
+  <script src="js/permiso.js"></script>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <div id="navbar"></div>
+
+  <!-- TABS -->
+  <div class="tabs-bar">
+    <button class="tab-btn active" id="tabVisitante" onclick="cambiarTab('visitante')">
+      <i class="bi bi-person-badge"></i> Visitantes
+    </button>
+    <button class="tab-btn" id="tabCorp" onclick="cambiarTab('corp')">
+      <i class="bi bi-truck"></i> Flotilla
+    </button>
+  </div>
+
+  <!-- ══════ TAB VISITANTES ══════ -->
+  <div class="tab-panel active" id="panelVisitante">
+    <div class="fab-wrap">
+      <a href="index.html" class="fab-btn">
+        <i class="bi bi-plus-lg"></i> Nuevo ingreso
+      </a>
+    </div>
+    <div class="loading" id="loadingCitasDT">
+      <i class="bi bi-hourglass-split"></i> Cargando citas...
+    </div>
+    <div id="tablaCitasEntradaWrap" style="display:none;">
+      <div class="dt-wrap">
+        <table id="tablaCitasEntrada" class="vl-table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Oficio</th>
+              <th>Fecha</th>
+              <th>Hora</th>
+              <th>Área de visita</th>
+              <th>Estatus</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ TAB FLOTILLA ══════ -->
+  <div class="tab-panel" id="panelCorp">
+    <div class="loading" id="loadingFlotillaDT">
+      <i class="bi bi-hourglass-split"></i> Cargando flotilla...
+    </div>
+    <div id="tablaFlotillaWrap" style="display:none;">
+      <div class="dt-wrap">
+        <table id="tablaFlotilla" class="vl-table" style="width:100%">
+          <thead>
+            <tr>
+              <th>Placas</th>
+              <th>Vehículo</th>
+              <th>Conductor / Responsable</th>
+              <th>Ruta / Detalles</th>
+              <th style="text-align:center;">Acción</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       MODAL CHECK-IN — VISITANTES (3 pasos)
+  ═══════════════════════════════════════════════════ -->
+  <div class="modal-overlay" id="modalCheckin" onclick="cerrarModalSiFondo(event,'modalCheckin')">
+    <div class="modal-box" role="dialog" aria-modal="true">
+
+      <div class="modal-header">
+        <div class="modal-steps">
+          <span class="mstep active" id="mstep1">1. Documentos</span>
+          <i class="bi bi-chevron-right mstep-sep"></i>
+          <span class="mstep" id="mstep2">2. Confirmar</span>
+          <i class="bi bi-chevron-right mstep-sep"></i>
+          <span class="mstep" id="mstep3">3. Listo</span>
+        </div>
+        <button class="modal-close" onclick="cerrarModal('modalCheckin')" title="Cerrar">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <!-- PASO 1: CHECKLIST -->
+      <div class="modal-step active" id="mPanel1">
+        <div class="modal-body">
+          <div id="mSelectedInfo"></div>
+          <div class="section-label" style="margin-top:0.75rem;">
+            <i class="bi bi-file-earmark-check"></i> Documentos a verificar
+          </div>
+          <div id="mChecklistItems" style="display:flex;flex-direction:column;gap:0.5rem;margin-top:0.5rem;"></div>
+          <div class="err-msg" id="mCheckErr" style="display:none;">
+            <i class="bi bi-exclamation-circle"></i> Confirma los documentos requeridos.
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-secondary" onclick="cerrarModal('modalCheckin')">
+            <i class="bi bi-x"></i> Cancelar
+          </button>
+          <button class="btn-primary" onclick="mIrPaso(2)" style="width:auto;">
+            Continuar <i class="bi bi-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- PASO 2: CONFIRMAR -->
+      <div class="modal-step" id="mPanel2">
+        <div class="modal-body">
+          <div id="mResumen" class="visitor-banner"></div>
+          <div class="section-label" style="margin-top:0.75rem;">
+            <i class="bi bi-clock"></i> Hora de entrada
+          </div>
+          <div class="form-row" style="margin-top:0.5rem;">
+            <div class="form-group">
+              <label class="field-label" for="mFechaEntrada">Fecha</label>
+              <input type="date" class="field-input" id="mFechaEntrada" readonly />
+            </div>
+            <div class="form-group">
+              <label class="field-label" for="mHoraEntrada">Hora</label>
+              <input type="time" class="field-input" id="mHoraEntrada" readonly />
+            </div>
+          </div>
+          <div class="form-group" style="margin-top:0.75rem;">
+            <label class="field-label" for="mObs">
+              Observaciones <span class="badge-opt">Opcional</span>
+            </label>
+            <textarea class="field-input" id="mObs" rows="3"
+              placeholder="Ej. Trae laptop, entrega documentación..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-secondary" onclick="mIrPaso(1)">
+            <i class="bi bi-chevron-left"></i> Regresar
+          </button>
+          <button class="btn-primary green" id="mBtnGuardar" onclick="guardarEntrada()" style="width:auto;">
+            <i class="bi bi-check-lg"></i> Guardar entrada
+          </button>
+        </div>
+      </div>
+
+      <!-- PASO 3: ÉXITO -->
+      <div class="modal-step" id="mPanel3">
+        <div class="modal-body modal-success">
+          <div class="success-icon" style="font-size:3.5rem;"><i class="bi bi-check-circle-fill"></i></div>
+          <h2 class="success-title" style="font-size:1.25rem;">Entrada registrada</h2>
+          <div class="folio-display" id="mFolioOk">—</div>
+          <p class="success-sub">El visitante ha sido registrado exitosamente.</p>
+        </div>
+        <div class="modal-footer modal-footer-center">
+          <button class="btn-primary" onclick="cerrarModal('modalCheckin')" style="width:auto;">
+            <i class="bi bi-check"></i> Cerrar
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       MODAL CHECK-IN — FLOTILLA (2 pasos)
+  ═══════════════════════════════════════════════════ -->
+  <div class="modal-overlay" id="modalCorp" onclick="cerrarModalSiFondo(event,'modalCorp')">
+    <div class="modal-box" role="dialog" aria-modal="true">
+
+      <div class="modal-header">
+        <div class="modal-steps">
+          <span class="mstep active" id="cstep1">1. Checklist</span>
+          <i class="bi bi-chevron-right mstep-sep"></i>
+          <span class="mstep" id="cstep2">2. Confirmar</span>
+          <i class="bi bi-chevron-right mstep-sep"></i>
+          <span class="mstep" id="cstep3">3. Listo</span>
+        </div>
+        <button class="modal-close" onclick="cerrarModal('modalCorp')" title="Cerrar">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <!-- PASO 1: CHECKLIST FLOTILLA -->
+      <div class="modal-step active" id="cPanel1">
+        <div class="modal-body">
+          <div id="cBannerModal"></div>
+          <div class="section-label" style="margin-top:0.75rem;">
+            <i class="bi bi-clipboard-check"></i> Checklist de regreso
+          </div>
+          <div id="cChecklistItems" style="display:flex;flex-direction:column;gap:0.5rem;margin-top:0.5rem;"></div>
+          <div class="err-msg" id="cCheckErr" style="display:none;">
+            <i class="bi bi-exclamation-circle"></i> Confirma los puntos requeridos.
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-secondary" onclick="cerrarModal('modalCorp')">
+            <i class="bi bi-x"></i> Cancelar
+          </button>
+          <button class="btn-primary" onclick="cIrPaso(2)" style="width:auto;">
+            Continuar <i class="bi bi-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- PASO 2: CONFIRMAR FLOTILLA -->
+      <div class="modal-step" id="cPanel2">
+        <div class="modal-body">
+          <div id="cResumenModal"></div>
+          <div class="section-label" style="margin-top:0.75rem;">
+            <i class="bi bi-clock"></i> Hora de entrada
+          </div>
+          <div class="form-row" style="margin-top:0.5rem;">
+            <div class="form-group">
+              <label class="field-label" for="cFechaEntrada">Fecha</label>
+              <input type="date" class="field-input" id="cFechaEntrada" />
+            </div>
+            <div class="form-group">
+              <label class="field-label" for="cHoraEntrada">Hora</label>
+              <input type="time" class="field-input" id="cHoraEntrada" />
+            </div>
+          </div>
+          <div class="form-group" style="margin-top:0.75rem;">
+            <label class="field-label" for="cObs">
+              Observaciones <span class="badge-opt">Opcional</span>
+            </label>
+            <textarea class="field-input" id="cObs" rows="3"
+              placeholder="Ej. Sin novedad, requiere revisión..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-secondary" onclick="cIrPaso(1)">
+            <i class="bi bi-chevron-left"></i> Regresar
+          </button>
+          <button class="btn-primary green" id="cBtnGuardar" onclick="guardarCorp()" style="width:auto;">
+            <i class="bi bi-check-lg"></i> Confirmar entrada
+          </button>
+        </div>
+      </div>
+
+      <!-- PASO 3: ÉXITO FLOTILLA -->
+      <div class="modal-step" id="cPanel3">
+        <div class="modal-body modal-success">
+          <div class="success-icon" style="font-size:3.5rem;"><i class="bi bi-check-circle-fill"></i></div>
+          <h2 class="success-title" style="font-size:1.25rem;">Entrada registrada</h2>
+          <p class="success-sub">El vehículo ha regresado exitosamente.</p>
+        </div>
+        <div class="modal-footer modal-footer-center">
+          <button class="btn-primary" onclick="cerrarModal('modalCorp')" style="width:auto;">
+            <i class="bi bi-check"></i> Cerrar
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="js/navbar.js"></script>
+  <script>cargarNavbar({ titulo: 'Registrar Entrada', backUrl: 'acceso.html' });</script>
+  <script src="js/entrada.js"></script>
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!--public/citas/vehiculo.html-->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Citas — Vehículo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+  <link rel="stylesheet" href="css/vehiculo.css"/>
+   <script src="../personalizacion/js/config.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="app-header">
+    
+    <span class="step-indicator">Paso 3 de 5</span>
+  </header>
+
+  <!-- PROGRESS -->
+  <div class="progress-wrap">
+    <div class="steps-track">
+      <div class="step-item done">
+        <div class="step-circle"><i class="bi bi-check"></i></div>
+        <div class="step-label">Agenda</div>
+      </div>
+      <div class="step-connector done"></div>
+      <div class="step-item done">
+        <div class="step-circle"><i class="bi bi-check"></i></div>
+        <div class="step-label">Datos</div>
+      </div>
+      <div class="step-connector done"></div>
+      <div class="step-item active">
+        <div class="step-circle">3</div>
+        <div class="step-label">Vehículo</div>
+      </div>
+      <div class="step-connector"></div>
+      <div class="step-item">
+        <div class="step-circle">4</div>
+        <div class="step-label">Docs</div>
+      </div>
+      <div class="step-connector"></div>
+      <div class="step-item">
+        <div class="step-circle">5</div>
+        <div class="step-label">Verificar</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENIDO -->
+  <div class="main-wrap">
+
+    <!-- LICENCIA -->
+    <div class="section-card">
+      <div class="section-label"><i class="bi bi-card-image"></i> Licencia de conducir</div>
+
+      <div class="upload-zone" id="licZone">
+        <input type="file" id="licFile" accept="image/*,.pdf" onchange="handleLic(this)"/>
+        <i class="bi bi-credit-card-2-front up-icon"></i>
+        <div class="up-label">Toca para subir licencia</div>
+        <div class="up-hint">JPG, PNG, PDF · Máx. 5 MB</div>
+      </div>
+
+      <div class="file-preview" id="licPreview">
+        <img id="licImg" src="" alt="Licencia"/>
+        <div class="file-info">
+          <span class="file-name" id="licName"></span>
+          <button class="file-remove" onclick="removeLic()">
+            <i class="bi bi-x-lg"></i> Quitar
+          </button>
+        </div>
+      </div>
+
+      <div class="invalid-msg" id="licError" style="display:none;">
+        <i class="bi bi-exclamation-circle"></i> Sube la licencia de conducir.
+      </div>
+    </div>
+
+    <!-- DATOS DEL VEHÍCULO -->
+    <div class="section-card">
+      <div class="section-label"><i class="bi bi-car-front"></i> Datos del vehículo</div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="field-label" for="placas">Placas <span class="req">*</span></label>
+          <input type="text" class="field-input" id="placas" placeholder="Ej. ABC-123-D"/>
+        </div>
+        <div class="form-group">
+          <label class="field-label" for="marca">Marca <span class="req">*</span></label>
+          <input type="text" class="field-input" id="marca" placeholder="Ej. Toyota"/>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="field-label" for="modelo">Modelo <span class="req">*</span></label>
+          <input type="text" class="field-input" id="modelo" placeholder="Ej. Corolla"/>
+        </div>
+        <div class="form-group">
+          <label class="field-label" for="anio">Año <span class="badge-opt">Opcional</span></label>
+          <input type="number" class="field-input" id="anio" placeholder="Ej. 2021" min="1970" max="2030"/>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="field-label" for="numSerie">N° de Serie / VIN <span class="badge-opt">Opcional</span></label>
+        <input type="text" class="field-input" id="numSerie" placeholder="Ej. 1HGCM82633A004352"/>
+      </div>
+    </div>
+
+    <!-- COLOR -->
+    <div class="section-card">
+      <div class="section-label"><i class="bi bi-palette"></i> Color del vehículo <span class="req">*</span></div>
+      <div class="color-grid" id="colorGrid"></div>
+      <input type="text" class="field-input" id="colorTexto" placeholder="O escribe el color..."/>
+      <div class="invalid-msg" id="colorError" style="display:none;">
+        <i class="bi bi-exclamation-circle"></i> Indica el color del vehículo.
+      </div>
+    </div>
+
+    <!-- OBSERVACIONES -->
+    <div class="section-card">
+      <div class="section-label"><i class="bi bi-chat-text"></i> Observaciones <span class="badge-opt">Opcional</span></div>
+      <textarea class="field-input" id="observaciones" rows="3"
+        placeholder="Ej. Vehículo con remolque, rayón en puerta derecha..."></textarea>
+    </div>
+
+    <!-- BOTONES -->
+    <div class="action-row">
+      <a class="btn-secondary" href="datos.html">
+        <i class="bi bi-chevron-left"></i> Regresar
+      </a>
+      <button class="btn-primary" onclick="continuar()">
+        Continuar <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+
+  </div>
+
+  <p class="app-footer">VehiLog · Sistema de Control Vehicular · v1.1</p>
+
+  <script src="js/vehiculo.js"></script>
+</body>
+</html>

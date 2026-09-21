@@ -1,0 +1,172 @@
+<!--public/admin.html-->
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VehiLog — Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <link rel="stylesheet" href="css/admin.css" />
+  <link rel="stylesheet" href="css/navbar.css">
+  <script src="personalizacion/js/config.js"></script>
+  <script src="js/permiso.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+
+  <div id="navbar"></div>
+
+  <div class="main-wrap">
+
+    <!-- ══════ USUARIOS ══════ -->
+    <div class="card">
+      <div class="card-title"><i class="bi bi-person-plus"></i> Agregar Usuario</div>
+
+      <!-- Todos los campos en una sola fila -->
+      <div class="form-inline">
+        <div class="form-group">
+          <label class="field-label" for="nuevoUsuario">Usuario</label>
+          <input type="text" class="field-input" id="nuevoUsuario" placeholder="Ej. jgarcia" />
+        </div>
+        <div class="form-group">
+          <label class="field-label" for="nuevoPassword">Contraseña</label>
+          <input type="password" class="field-input" id="nuevoPassword" placeholder="Mínimo 6 caracteres" />
+        </div>
+        <div class="form-group">
+          <label class="field-label" for="nuevoRol">Rol</label>
+          <select class="field-input" id="nuevoRol">
+            <option value="operador">Operador</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="field-label" for="nuevoEmail">Correo electrónico</label>
+          <input type="email" class="field-input" id="nuevoEmail" placeholder="Ej. jgarcia@empresa.com" />
+        </div>
+        <button class="btn-add" id="btnAgregar" onclick="agregarUsuario()">
+          <i class="bi bi-plus-lg"></i> Agregar
+        </button>
+      </div>
+
+      <div class="alert-ok" id="alertOk"></div>
+      <div class="alert-err" id="alertErr"></div>
+    </div>
+
+    <!-- Lista usuarios -->
+    <div class="card">
+      <div class="card-title"><i class="bi bi-people"></i> Usuarios Registrados</div>
+      <div class="loading" id="loadingUsers"><i class="bi bi-hourglass-split"></i> Cargando...</div>
+      <div id="usersList"></div>
+    </div>
+
+    <!-- ══════ ÁREAS ══════ -->
+    <div class="card">
+      <div class="card-title"><i class="bi bi-building"></i> Agregar Área</div>
+
+      <div class="form-inline areas">
+        <div class="form-group">
+          <label class="field-label" for="nuevaArea">Nombre del área</label>
+          <input type="text" class="field-input" id="nuevaArea" placeholder="Ej. Logística" />
+        </div>
+        <div class="form-group">
+          <label class="field-label" for="nuevaAreaEmail">Correo del responsable</label>
+          <input type="email" class="field-input" id="nuevaAreaEmail" placeholder="Ej. logistica@empresa.com" />
+        </div>
+        <button class="btn-add" id="btnAgregarArea" onclick="agregarArea()">
+          <i class="bi bi-plus-lg"></i> Agregar
+        </button>
+      </div>
+
+      <div class="alert-ok" id="alertOkArea"></div>
+      <div class="alert-err" id="alertErrArea"></div>
+    </div>
+
+    <!-- Lista áreas -->
+    <div class="card">
+      <div class="card-title"><i class="bi bi-diagram-3"></i> Áreas Registradas</div>
+      <div class="loading" id="loadingAreas"><i class="bi bi-hourglass-split"></i> Cargando...</div>
+      <div id="areasList"></div>
+    </div>
+
+  </div>
+
+  <!-- ══════ MODAL EDITAR USUARIO ══════ -->
+  <div class="modal-overlay" id="modalUsuario" onclick="cerrarModalSiFondo(event,'modalUsuario')">
+    <div class="modal-box">
+      <div class="modal-header">
+        <span class="modal-title"><i class="bi bi-person-gear"></i> Editar Usuario</span>
+        <button class="modal-close" onclick="cerrarModal('modalUsuario')"><i class="bi bi-x-lg"></i></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="editUsuarioId" />
+        <div class="form-group">
+          <label class="field-label">Usuario</label>
+          <input type="text" class="field-input" id="editUsuarioNombre" disabled />
+        </div>
+        <div class="form-group">
+          <label class="field-label" for="editUsuarioEmail">Correo electrónico</label>
+          <input type="email" class="field-input" id="editUsuarioEmail" placeholder="correo@empresa.com" />
+        </div>
+        <div class="form-group">
+          <label class="field-label" for="editUsuarioRol">Rol</label>
+          <select class="field-input" id="editUsuarioRol">
+            <option value="operador">Operador</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="field-label" for="editUsuarioPassword">
+            Nueva contraseña <span
+              style="font-size:0.6rem;font-weight:600;background:var(--bg);color:var(--muted);border:1px solid var(--border);border-radius:3px;padding:1px 5px;margin-left:4px;vertical-align:middle;">Opcional</span>
+          </label>
+          <input type="password" class="field-input" id="editUsuarioPassword"
+            placeholder="Dejar vacío para no cambiar" />
+        </div>
+        <div class="alert-ok" id="alertOkEditU"></div>
+        <div class="alert-err" id="alertErrEditU"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="cerrarModal('modalUsuario')">Cancelar</button>
+        <button class="btn-add" id="btnGuardarUsuario" onclick="guardarUsuario()">
+          <i class="bi bi-check-lg"></i> Guardar cambios
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ MODAL EDITAR ÁREA ══════ -->
+  <div class="modal-overlay" id="modalArea" onclick="cerrarModalSiFondo(event,'modalArea')">
+    <div class="modal-box">
+      <div class="modal-header">
+        <span class="modal-title"><i class="bi bi-building-gear"></i> Editar Área</span>
+        <button class="modal-close" onclick="cerrarModal('modalArea')"><i class="bi bi-x-lg"></i></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="editAreaId" />
+        <div class="form-group">
+          <label class="field-label" for="editAreaNombre">Nombre del área</label>
+          <input type="text" class="field-input" id="editAreaNombre" placeholder="Ej. Logística" />
+        </div>
+        <div class="form-group">
+          <label class="field-label" for="editAreaEmail">Correo del responsable</label>
+          <input type="email" class="field-input" id="editAreaEmail" placeholder="correo@empresa.com" />
+        </div>
+        <div class="alert-ok" id="alertOkEditA"></div>
+        <div class="alert-err" id="alertErrEditA"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="cerrarModal('modalArea')">Cancelar</button>
+        <button class="btn-add" id="btnGuardarArea" onclick="guardarArea()">
+          <i class="bi bi-check-lg"></i> Guardar cambios
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/navbar.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

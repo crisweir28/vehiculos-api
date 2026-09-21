@@ -1,0 +1,221 @@
+<!--public/index.html-->
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VehiLog — Registro Manual</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <link rel="stylesheet" href="css/index.css" />
+  <link rel="stylesheet" href="css/navbar.css">
+  <script src="personalizacion/js/config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="js/permiso.js"></script>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <div id="navbar"></div>
+
+  <!-- STEPS -->
+  <div class="progress-wrap">
+    <div class="steps-track" id="stepsTrack">
+      <div class="step-item active" data-step="0">
+        <div class="step-circle">1</div>
+        <div class="step-label">Entrada</div>
+      </div>
+      <div class="step-connector" id="conn-0"></div>
+      <div class="step-item" data-step="1">
+        <div class="step-circle">2</div>
+        <div class="step-label">Persona</div>
+      </div>
+      <div class="step-connector" id="conn-1"></div>
+      <div class="step-item" data-step="2">
+        <div class="step-circle">3</div>
+        <div class="step-label">Vehículo</div>
+      </div>
+      <div class="step-connector" id="conn-2"></div>
+      <div class="step-item" data-step="3">
+        <div class="step-circle">4</div>
+        <div class="step-label">Resumen</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wizard-container">
+
+    <!-- BLOQUE 0: DATOS DE ENTRADA -->
+    <div class="block-card active" id="block-0">
+      <div class="section-label"><i class="bi bi-calendar-check"></i> Datos de Entrada</div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="field-label" for="fechaEntrada">Fecha <span class="req">*</span></label>
+          <input type="date" class="field-input" id="fechaEntrada" />
+        </div>
+        <div class="form-group">
+          <label class="field-label" for="horaEntrada">Hora <span class="req">*</span></label>
+          <input type="time" class="field-input" id="horaEntrada" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="field-label" for="folio">Folio <span class="req">*</span></label>
+        <input type="text" class="field-input" id="folio" placeholder="Ej. ENT-00123" readonly/>
+        <div class="auto-fill" id="folioHint"></div>
+      </div>
+
+      <div class="action-row single">
+        <button class="btn-primary" onclick="goNext(0)">
+          Continuar <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- BLOQUE 1: CONDUCTOR -->
+    <div class="block-card" id="block-1">
+      <div class="section-label"><i class="bi bi-person-badge"></i> Datos de la Persona</div>
+
+      <div class="form-group">
+        <label class="field-label" for="nombreConductor">Nombre Completo <span class="req">*</span></label>
+        <input type="text" class="field-input" id="nombreConductor" placeholder="Apellido Paterno Materno, Nombre(s)" />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="field-label" for="empresa">Empresa o Área <span class="req">*</span></label>
+          <input type="text" class="field-input" id="empresa" placeholder="Ej. Logística / Planta Norte" />
+        </div>
+        <div class="form-group">
+          <label class="field-label" for="numEmpleado">N° Empleado <span class="badge-opt">Opcional</span></label>
+          <input type="text" class="field-input" id="numEmpleado" placeholder="Ej. EMP-5432" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="field-label" for="telefono">Teléfono <span class="req">*</span></label>
+          <input type="tel" class="field-input" id="telefono" placeholder="55 1234 5678" />
+        </div>
+        <div class="form-group">
+          <label class="field-label" for="identificacion">Identificación <span class="req">*</span></label>
+          <select class="field-input" id="identificacion">
+            <option value="">— Seleccionar —</option>
+            <option>INE / IFE</option>
+            <option>Pasaporte</option>
+            <option>Licencia de Conducir</option>
+            <option>Credencial de Empleado</option>
+            <option>Otro</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- ¿VIENE CON VEHÍCULO? -->
+      <div class="section-label" style="margin-top:0.25rem;">
+        <i class="bi bi-car-front"></i> ¿Ingresa con vehículo?
+      </div>
+      <div class="toggle-row">
+        <button class="toggle-btn active" id="toggleNo" onclick="setVehiculo(false)">
+          <i class="bi bi-person-walking"></i> Sin vehículo
+        </button>
+        <button class="toggle-btn" id="toggleSi" onclick="setVehiculo(true)">
+          <i class="bi bi-car-front-fill"></i> Con vehículo
+        </button>
+      </div>
+
+      <div class="action-row">
+        <button class="btn-secondary" onclick="goBack(1)">
+          <i class="bi bi-chevron-left"></i> Regresar
+        </button>
+        <button class="btn-primary" onclick="goNext(1)">
+          Continuar <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- BLOQUE 2: VEHÍCULO (condicional) -->
+    <div class="block-card" id="block-2">
+      <div class="section-label"><i class="bi bi-car-front"></i> Información del Vehículo</div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="field-label" for="placas">Placas <span class="req">*</span></label>
+          <input type="text" class="field-input" id="placas" placeholder="Ej. ABC-123-D" />
+        </div>
+        <div class="form-group">
+          <label class="field-label" for="marca">Marca <span class="req">*</span></label>
+          <input type="text" class="field-input" id="marca" placeholder="Ej. Toyota" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="field-label" for="modelo">Modelo <span class="req">*</span></label>
+          <input type="text" class="field-input" id="modelo" placeholder="Ej. Hilux" />
+        </div>
+        <div class="form-group">
+          <label class="field-label" for="color">Color <span class="req">*</span></label>
+          <input type="text" class="field-input" id="color" placeholder="Ej. Blanco" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="field-label" for="anio">Año <span class="badge-opt">Opcional</span></label>
+          <input type="number" class="field-input" id="anio" placeholder="Ej. 2022" min="1970" max="2030" />
+        </div>
+        <div class="form-group">
+          <label class="field-label" for="vin">VIN / N° de Serie <span class="badge-opt">Opcional</span></label>
+          <input type="text" class="field-input" id="vin" placeholder="Ej. 1HGCM82633A004352" />
+        </div>
+      </div>
+
+      <div class="action-row">
+        <button class="btn-secondary" onclick="goBack(2)">
+          <i class="bi bi-chevron-left"></i> Regresar
+        </button>
+        <button class="btn-primary" onclick="goNext(2)">
+          Ver Resumen <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- BLOQUE 3: RESUMEN -->
+    <div class="block-card" id="block-3">
+      <div class="section-label"><i class="bi bi-clipboard-check"></i> Resumen del Registro</div>
+      <div id="summaryContent"></div>
+
+      <div class="action-row">
+        <button class="btn-secondary" onclick="goBack(3)">
+          <i class="bi bi-chevron-left"></i> Corregir
+        </button>
+        <button class="btn-primary green" id="btnSubmit" onclick="submitForm()">
+          <i class="bi bi-check-lg"></i> Guardar Entrada
+        </button>
+      </div>
+    </div>
+
+    <!-- ÉXITO -->
+    <div class="success-screen" id="successScreen">
+      <div class="success-icon"><i class="bi bi-check-circle-fill"></i></div>
+      <h2 class="success-title">Entrada Registrada</h2>
+      <p class="success-sub">El registro se guardó exitosamente.</p>
+      <div class="folio-display" id="successFolio">Folio: —</div>
+      <p class="success-sub">La salida se registrará cuando la persona abandone las instalaciones.</p>
+      <div class="success-actions">
+        <button class="btn-primary" onclick="resetForm()">
+          <i class="bi bi-plus-lg"></i> Nueva Entrada
+        </button>
+        <a class="btn-secondary" href="dashboard.html">
+          <i class="bi bi-bar-chart-line"></i> Ver Dashboard
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+  <p class="app-footer">VehiLog · Sistema de Control Vehicular · v1.1</p>
+  <script src="js/navbar.js"></script>
+  <script>cargarNavbar({ titulo: 'Registro Manual' });</script>
+  <script src="js/index.js"></script>
+</body>
+
+</html>

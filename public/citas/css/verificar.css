@@ -1,0 +1,242 @@
+/*public/citas/css/verificar.css*/
+/* ─── TOKENS ─────────────────────────────────────────── */
+:root {
+  --surface2:  #f2f2f7;   /* alias para compatibilidad con verificar.js */
+  --bg:        #f2f2f7;
+  --surface:   #ffffff;
+  --border:    #e0e0e5;
+  --text:      #111111;
+  --muted:     #8a8a8e;
+  --accent:    #111111;
+  --success:   #34c759;
+  --danger:    #e8441a;
+  --radius:    12px;
+  --radius-sm: 10px;
+  --font:      'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --header-h:  52px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── HEADER ─────────────────────────────────────────── */
+.app-header {
+  background: var(--surface); border-bottom: 1px solid var(--border);
+  height: var(--header-h); display: flex; align-items: center; gap: 0.75rem;
+  padding: 0 1rem; position: sticky; top: 0; z-index: 50;
+}
+.btn-back-header {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--bg); border: 1px solid var(--border);
+  color: var(--text); text-decoration: none; font-size: 1rem;
+  display: inline-flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-back-header:hover { background: var(--border); }
+.page-title { font-size: 1rem; font-weight: 600; color: var(--text); flex: 1; }
+.step-indicator {
+  font-size: 0.72rem; color: var(--muted);
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 20px; padding: 0.25rem 0.7rem; white-space: nowrap;
+}
+
+/* ─── PROGRESS ───────────────────────────────────────── */
+.progress-wrap {
+  background: var(--surface); border-bottom: 1px solid var(--border);
+  padding: 0.85rem 1rem;
+  position: sticky; top: var(--header-h); z-index: 40;
+}
+.steps-track { display: flex; align-items: center; max-width: 480px; margin: 0 auto; }
+.step-item { display: flex; flex-direction: column; align-items: center; gap: 0.25rem; flex-shrink: 0; }
+.step-circle {
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 2px solid var(--border); background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.72rem; font-weight: 700; color: var(--muted);
+  transition: all 0.25s;
+}
+.step-item.active .step-circle { border-color: var(--accent); background: var(--accent); color: #fff; }
+.step-item.done   .step-circle { border-color: var(--success); background: var(--success); color: #fff; }
+.step-label {
+  font-size: 0.58rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.5px;
+  color: var(--muted); text-align: center;
+}
+.step-item.active .step-label { color: var(--accent); }
+.step-item.done   .step-label { color: var(--success); }
+.step-connector {
+  flex: 1; height: 2px; background: var(--border);
+  margin: 0 4px; margin-bottom: 16px;
+  border-radius: 1px; transition: background 0.25s;
+}
+.step-connector.done { background: var(--success); }
+
+/* ─── MAIN ───────────────────────────────────────────── */
+.main-wrap {
+  max-width: 560px; margin: 0 auto;
+  padding: 1rem 1rem 3rem;
+  display: flex; flex-direction: column; gap: 0.85rem;
+}
+
+/* ─── SECCIONES RESUMEN ──────────────────────────────── */
+.res-section {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden;
+  margin-bottom: 0.85rem;
+}
+
+.res-section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+
+.res-section-title {
+  font-size: 0.72rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted);
+  display: flex; align-items: center; gap: 0.35rem;
+}
+
+.btn-edit-section {
+  font-size: 0.72rem; font-weight: 600; color: var(--accent);
+  text-decoration: none; display: flex; align-items: center; gap: 0.25rem;
+  transition: opacity 0.15s;
+}
+.btn-edit-section:hover { opacity: 0.7; }
+
+/* ─── FILAS ──────────────────────────────────────────── */
+.res-row {
+  display: flex; align-items: center;
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--border);
+  gap: 0.75rem;
+}
+.res-row:last-child { border-bottom: none; }
+
+.res-key {
+  font-size: 0.7rem; text-transform: uppercase;
+  letter-spacing: 0.5px; color: var(--muted);
+  min-width: 120px; flex-shrink: 0;
+}
+
+.res-val {
+  font-size: 0.88rem; font-weight: 500; color: var(--text); flex: 1;
+}
+
+.res-val.editable {
+  cursor: pointer;
+  border-bottom: 1.5px dashed var(--border);
+  padding: 1px 4px; border-radius: 4px;
+  transition: all 0.15s;
+}
+.res-val.editable:hover {
+  background: var(--bg); border-color: var(--accent);
+}
+
+/* Input de edición inline — el JS lo inyecta */
+.res-val input {
+  background: var(--bg); border: 1.5px solid var(--accent);
+  border-radius: var(--radius-sm); color: var(--text);
+  font-family: var(--font); font-size: 0.88rem;
+  padding: 2px 8px; width: 100%; outline: none;
+}
+
+/* ─── DOC CHIPS ──────────────────────────────────────── */
+.doc-chip {
+  display: inline-block;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 20px; padding: 2px 8px;
+  font-size: 0.73rem; color: var(--muted); margin: 2px;
+}
+
+/* ─── BOTONES ────────────────────────────────────────── */
+.action-row {
+  display: grid; grid-template-columns: auto 1fr; gap: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.btn-primary {
+  background: var(--accent); color: #fff;
+  font-family: var(--font); font-size: 0.92rem; font-weight: 600;
+  border: none; border-radius: var(--radius-sm);
+  padding: 0.78rem 1.25rem; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 0.4rem; justify-content: center;
+  width: 100%; text-decoration: none;
+  transition: opacity 0.15s, transform 0.12s;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-primary.green { background: var(--success); }
+.btn-primary:active:not(:disabled) { opacity: 0.82; transform: scale(0.98); }
+.btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.btn-secondary {
+  background: var(--bg); color: var(--text);
+  font-family: var(--font); font-size: 0.88rem; font-weight: 600;
+  border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+  padding: 0.78rem 1.1rem; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 0.4rem; justify-content: center;
+  text-decoration: none; white-space: nowrap;
+  transition: border-color 0.15s; -webkit-tap-highlight-color: transparent;
+}
+.btn-secondary:hover { border-color: var(--accent); }
+
+/* ─── ÉXITO ──────────────────────────────────────────── */
+.success-screen {
+  display: flex; flex-direction: column;
+  align-items: center; text-align: center;
+  padding: 2rem 1rem; gap: 1rem;
+}
+
+.success-icon {
+  font-size: 4rem; color: var(--success);
+  animation: pop 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+@keyframes pop { from { transform:scale(0.5); opacity:0; } to { transform:scale(1); opacity:1; } }
+
+.success-title {
+  font-size: 1.4rem; font-weight: 700; color: var(--text); letter-spacing: -0.3px;
+}
+.success-sub { font-size: 0.85rem; color: var(--muted); }
+
+/* ─── OFICIO ─────────────────────────────────────────── */
+.oficio-block { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; }
+.oficio-label {
+  font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1px; color: var(--muted);
+}
+.success-oficio {
+  background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.65rem 2rem;
+  font-size: 1.2rem; font-weight: 700; letter-spacing: 2px; color: var(--text);
+}
+
+/* ─── QR ─────────────────────────────────────────────── */
+.qr-block { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
+.qr-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); }
+.qr-wrap {
+  background: #fff; padding: 1rem; border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  display: inline-block;
+}
+.qr-hint { font-size: 0.72rem; color: var(--muted); }
+
+/* ─── SUCCESS ACTIONS ────────────────────────────────── */
+.success-actions {
+  display: flex; flex-direction: column; gap: 0.6rem;
+  width: 100%; max-width: 280px;
+}
+
+/* ─── FOOTER ─────────────────────────────────────────── */
+.app-footer {
+  text-align: center; padding: 1.5rem;
+  font-size: 0.68rem; color: var(--muted); letter-spacing: 0.3px;
+}

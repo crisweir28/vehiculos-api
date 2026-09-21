@@ -1,0 +1,307 @@
+<!--public/salida.html-->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VehiLog — Salida</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+
+  <!-- DataTables -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css"/>
+  <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css"/>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <link rel="stylesheet" href="css/tabla.css"/>
+  <link rel="stylesheet" href="css/navbar.css"/>
+  <link rel="stylesheet" href="css/salida.css"/>
+  <script src="personalizacion/js/config.js"></script>
+  <script src="js/permiso.js"></script>
+</head>
+<body>
+
+  <div id="navbar"></div>
+
+  <!-- TABS -->
+  <div class="tabs-bar">
+    <button class="tab-btn active" id="tabVisitante" onclick="cambiarTab('visitante')">
+      <i class="bi bi-person-badge"></i> Visitantes
+    </button>
+    <button class="tab-btn" id="tabCorp" onclick="cambiarTab('corp')">
+      <i class="bi bi-truck"></i> Flotilla
+    </button>
+  </div>
+
+  <!-- ══════ TAB VISITANTES ══════ -->
+  <div class="tab-panel active" id="panelVisitante">
+    <div class="loading" id="loadingVisitantesDT">
+      <i class="bi bi-hourglass-split"></i> Cargando registros...
+    </div>
+    <div id="tablaVisitantesWrap" style="display:none;">
+      <div class="dt-wrap">
+        <table id="tablaVisitantes" class="vl-table" style="width:100%">
+          <thead>
+            <tr>
+              <th>Conductor</th>
+              <th>Folio</th>
+              <th>Placas</th>
+              <th>Vehículo</th>
+              <th>Entrada</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ TAB FLOTILLA ══════ -->
+  <div class="tab-panel" id="panelCorp">
+    <div class="loading" id="loadingCorpDT">
+      <i class="bi bi-hourglass-split"></i> Cargando flotilla...
+    </div>
+    <div id="tablaCorpWrap" style="display:none;">
+      <div class="dt-wrap">
+        <table id="tablaCorp" class="vl-table" style="width:100%">
+          <thead>
+            <tr>
+              <th>Placas</th>
+              <th>Vehículo</th>
+              <th>Año</th>
+              <th>VIN / N° de Serie</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       MODAL SALIDA — VISITANTES (3 pasos)
+  ═══════════════════════════════════════════════════ -->
+  <div class="modal-overlay" id="modalVisitante" onclick="cerrarModalSiFondo(event,'modalVisitante')">
+    <div class="modal-box" role="dialog" aria-modal="true">
+
+      <div class="modal-header">
+        <div class="modal-steps">
+          <span class="mstep danger active" id="vstep1">1. Checklist</span>
+          <i class="bi bi-chevron-right mstep-sep"></i>
+          <span class="mstep danger" id="vstep2">2. Confirmar</span>
+          <i class="bi bi-chevron-right mstep-sep"></i>
+          <span class="mstep danger" id="vstep3">3. Listo</span>
+        </div>
+        <button class="modal-close" onclick="cerrarModal('modalVisitante')" title="Cerrar">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <!-- PASO 1: CHECKLIST -->
+      <div class="modal-step active" id="vPanel1">
+        <div class="modal-body">
+          <div id="vSelectedInfo"></div>
+          <div class="section-label" style="margin-top:0.75rem;">
+            <i class="bi bi-clipboard-check"></i> Verificar antes de salir
+          </div>
+          <div id="vChecklist" style="display:flex;flex-direction:column;gap:0.5rem;margin-top:0.5rem;"></div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-secondary" onclick="cerrarModal('modalVisitante')">
+            <i class="bi bi-x"></i> Cancelar
+          </button>
+          <button class="btn-primary danger" onclick="vIrPaso(2)" style="width:auto;">
+            Continuar <i class="bi bi-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- PASO 2: CONFIRMAR -->
+      <div class="modal-step" id="vPanel2">
+        <div class="modal-body">
+          <div id="vResumen"></div>
+          <div class="section-label" style="margin-top:0.75rem;">
+            <i class="bi bi-clock"></i> Hora de salida
+          </div>
+          <div class="form-row" style="margin-top:0.5rem;">
+            <div class="form-group">
+              <label class="field-label" for="vFechaSalida">Fecha</label>
+              <input type="date" class="field-input" id="vFechaSalida"/>
+            </div>
+            <div class="form-group">
+              <label class="field-label" for="vHoraSalida">Hora</label>
+              <input type="time" class="field-input" id="vHoraSalida"/>
+            </div>
+          </div>
+          <div class="form-group" style="margin-top:0.75rem;">
+            <label class="field-label" for="vObs">
+              Observaciones <span class="badge-opt">Opcional</span>
+            </label>
+            <textarea class="field-input" id="vObs" rows="3"
+              placeholder="Ej. Se llevó laptop, dejó documentación..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-secondary" onclick="vIrPaso(1)">
+            <i class="bi bi-chevron-left"></i> Regresar
+          </button>
+          <button class="btn-primary danger" id="vBtnGuardar" onclick="guardarVisitante()" style="width:auto;">
+            <i class="bi bi-check-lg"></i> Guardar salida
+          </button>
+        </div>
+      </div>
+
+      <!-- PASO 3: ÉXITO -->
+      <div class="modal-step" id="vPanel3">
+        <div class="modal-body modal-success">
+          <div class="success-icon danger" style="font-size:3.5rem;">
+            <i class="bi bi-box-arrow-right"></i>
+          </div>
+          <h2 class="success-title" style="font-size:1.25rem;">Salida registrada</h2>
+          <p class="success-sub">La salida del visitante se guardó correctamente.</p>
+        </div>
+        <div class="modal-footer modal-footer-center">
+          <button class="btn-primary danger" onclick="cerrarModal('modalVisitante')" style="width:auto;">
+            <i class="bi bi-check"></i> Cerrar
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       MODAL SALIDA — FLOTILLA (3 pasos)
+  ═══════════════════════════════════════════════════ -->
+  <div class="modal-overlay" id="modalCorp" onclick="cerrarModalSiFondo(event,'modalCorp')">
+    <div class="modal-box" role="dialog" aria-modal="true">
+
+      <div class="modal-header">
+        <div class="modal-steps">
+          <span class="mstep corp active" id="cstep1">1. Datos</span>
+          <i class="bi bi-chevron-right mstep-sep"></i>
+          <span class="mstep corp" id="cstep2">2. Resumen</span>
+          <i class="bi bi-chevron-right mstep-sep"></i>
+          <span class="mstep corp" id="cstep3">3. Listo</span>
+        </div>
+        <button class="modal-close" onclick="cerrarModal('modalCorp')" title="Cerrar">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <!-- PASO 1: DATOS -->
+      <div class="modal-step active" id="cPanel1">
+        <div class="modal-body">
+          <div id="cBannerModal"></div>
+          <div class="section-label" style="margin-top:0.75rem;">
+            <i class="bi bi-person-lines-fill"></i> Conductor y destino
+          </div>
+          <div style="display:flex;flex-direction:column;gap:0.65rem;margin-top:0.5rem;">
+            <div class="form-group">
+              <label class="field-label" for="cConductor">
+                Conductor <span class="badge-req">*</span>
+              </label>
+              <input type="text" class="field-input" id="cConductor"
+                placeholder="Nombre completo del conductor"/>
+            </div>
+            <div class="form-group">
+              <label class="field-label" for="cDestino">
+                Destino <span class="badge-opt">Opcional</span>
+              </label>
+              <input type="text" class="field-input" id="cDestino"
+                placeholder="Ej. Cliente norte, Almacén..."/>
+            </div>
+          </div>
+          <div class="section-label" style="margin-top:0.75rem;">
+            <i class="bi bi-clock"></i> Hora de salida
+          </div>
+          <div class="form-row" style="margin-top:0.5rem;">
+            <div class="form-group">
+              <label class="field-label" for="cFechaSalida">
+                Fecha <span class="badge-req">*</span>
+              </label>
+              <input type="date" class="field-input" id="cFechaSalida"/>
+            </div>
+            <div class="form-group">
+              <label class="field-label" for="cHoraSalida">
+                Hora <span class="badge-req">*</span>
+              </label>
+              <input type="time" class="field-input" id="cHoraSalida"/>
+            </div>
+          </div>
+          <div class="form-group" style="margin-top:0.65rem;">
+            <label class="field-label" for="cObs">
+              Observaciones <span class="badge-opt">Opcional</span>
+            </label>
+            <textarea class="field-input" id="cObs" rows="2"
+              placeholder="Ej. Lleva equipo, documentación..."></textarea>
+          </div>
+          <div class="err-msg" id="cConductorErr" style="display:none;">
+            <i class="bi bi-exclamation-circle"></i> Ingresa el nombre del conductor.
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-secondary" onclick="cerrarModal('modalCorp')">
+            <i class="bi bi-x"></i> Cancelar
+          </button>
+          <button class="btn-primary corp" onclick="cIrPaso(2)" style="width:auto;">
+            Ver resumen <i class="bi bi-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- PASO 2: RESUMEN -->
+      <div class="modal-step" id="cPanel2">
+        <div class="modal-body">
+          <div id="cResumenModal"></div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-secondary" onclick="cIrPaso(1)">
+            <i class="bi bi-chevron-left"></i> Regresar
+          </button>
+          <button class="btn-primary corp" id="cBtnGuardar" onclick="guardarCorp()" style="width:auto;">
+            <i class="bi bi-check-lg"></i> Registrar salida
+          </button>
+        </div>
+      </div>
+
+      <!-- PASO 3: ÉXITO -->
+      <div class="modal-step" id="cPanel3">
+        <div class="modal-body modal-success">
+          <div class="success-icon corp" style="font-size:3.5rem;">
+            <i class="bi bi-truck"></i>
+          </div>
+          <h2 class="success-title" style="font-size:1.25rem;">Salida registrada</h2>
+          <p class="success-sub">El vehículo corporativo ha salido.</p>
+        </div>
+        <div class="modal-footer modal-footer-center">
+          <button class="btn-primary corp" onclick="cerrarModal('modalCorp')" style="width:auto;">
+            <i class="bi bi-check"></i> Cerrar
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="js/navbar.js"></script>
+  <script>cargarNavbar({ titulo: 'Registrar Salida', backUrl: 'acceso.html' });</script>
+  <script src="js/salida.js"></script>
+
+  <script>
+    $(document).ready(function() {
+      $('#tabCorp').on('click', function() {
+        setTimeout(function() {
+          if (window.dtCorp) window.dtCorp.columns.adjust().responsive.recalc();
+        }, 150);
+      });
+    });
+  </script>
+
+</body>
+</html>
